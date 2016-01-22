@@ -18,8 +18,9 @@
 <body>
 <?php
   use App\Http\Controllers\MenuController;
+
   $menu = MenuController::generateMenuItems();
-  //var_dump($menu);
+
 ?>
 <nav id="nav" class="nav">
     <ul class="offcanvas__nav--list">
@@ -38,10 +39,16 @@
                 <li class="menu__main--list-item" itemprop="url"><a href="" itemprop="name">menu item</a></li>
                 <li class="menu__main--list-item" itemprop="url"><a href="" itemprop="name">menu item</a></li>
             </ul>
+
         </nav>
     </header>
     @yield('content')
 </section>
+<?php
 
+    var_dump(\Illuminate\Support\Facades\Session::all());
+    echo "ÒÎÊÅÍ".csrf_token();
+
+?>
 </body>
 </html>
