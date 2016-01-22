@@ -1,0 +1,56 @@
+.codeblock {
+  position: relative;
+  margin: 0 0 1.625em;
+  white-space: pre;
+  word-wrap: normal; }
+  .codeblock:before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding-right: .5em;
+    opacity: 1;
+    color: #fdf6e3;
+    line-height: 1.5;
+    cursor: default;
+    font-size: 1em; }
+  .codeblock code {
+    overflow-x: scroll;
+    display: block;
+    padding: 0 1em;
+    background: #3c3f41;
+    background-image: linear-gradient(#353739 50%, transparent 50%);
+    background-size: 100% 3em;
+    background-position: 0 1.5em;
+    background-origin: content-box;
+    color: #fdf6e3;
+    line-height: 1.5;
+    font-size: 1em; }
+
+.css:before {
+  content: "CSS"; }
+
+.html:before {
+  content: "HTML"; }
+
+.javascript:before {
+  content: "JavaScript"; }
+
+.jquery:before {
+  content: "jQuery"; }
+
+.php:before {
+  content: "PHP"; }
+
+.scss:before {
+  content: "SCSS"; }
+
+.sublime-snippet:before {
+  content: "Sublime Snippet"; }
+
+.cpp:before {
+  content: "C++"; }
+
+h1 {
+  color: #3c3f41; }
+
+/*# sourceMappingURL=codeblock.css.map */

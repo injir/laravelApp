@@ -1,0 +1,53 @@
+$background: #fdf6e3;
+$accent-color: #3c3f41;
+$body-font-size: 100%;
+
+.codeblock {
+  position: relative;
+  margin: 0 0 1.625em;
+  white-space: pre;
+  word-wrap: normal;
+  &:before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding-right: .5em;
+    opacity: 1;
+    color: $background;
+    line-height: 1.5;
+    cursor: default;
+    font-size: 1em;
+  }
+  code {
+    overflow-x: scroll;
+    display: block;
+    padding: 0 1em;
+    background: $accent-color;
+    background-image: linear-gradient(darken($accent-color, 3%) 50%, transparent 50%);
+    background-size: 100% 3em;
+    background-position: 0 1.5em;
+    background-origin: content-box;
+    color: $background;
+    line-height: 1.5;
+    font-size: 1em;
+  }
+}
+.css:before { content: "CSS";  }
+.html:before { content: "HTML"; }
+.javascript:before { content: "JavaScript"; }
+.jquery:before { content: "jQuery"; }
+.php:before { content: "PHP"; }
+.scss:before { content: "SCSS"; }
+.sublime-snippet:before { content: "Sublime Snippet"; }
+.cpp:before { content: "C++"; }
+
+//body {
+//  max-width: 70em;
+//  margin: 0 auto;
+//  padding: 2em 4em;
+//  background: #EEE8D5;
+//  font-size: $body-font-size;
+//}
+h1 {
+  color: $accent-color;
+}
