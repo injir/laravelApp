@@ -23,7 +23,13 @@ use Illuminate\Support\Facades\Artisan;
     | kernel and includes session state, CSRF protection, and more.
     |
     */
-
+Route::get('migrate',function(){
+    Artisan::call('migrate:refresh');
+});
+Route::get('seed',function(){
+    Artisan::call('db:seed');
+});
+Route::post('uploadvk','SocialAuthController@uploadVk');
     Route::group(['middleware' => ['web']], function () {
         Route::get('/', function () {
             // \Illuminate\Support\Facades\Session::push('key','213123');
@@ -33,11 +39,24 @@ use Illuminate\Support\Facades\Artisan;
         Route::get('articles','ArticleController@generateArticlesList');
         Route::get('articles/{id}','ArticleController@viewArticle');
         Route::get('vk', 'SocialAuthController@vkAuth');
-        Route::get('migrate',function(){
-            Artisan::call('migrate:refresh');
-        });
+
         Route::get('/logout',function(){
            session()->flush();
         });
+        Route::get('repost/{table}/{id}','SocialAuthController@repost');
+
     });
 
+Route::group(['middleware' => ['web','customAuth']], function () {
+    Route::get('/admin','AdminController@index');
+    Route::get('/admin/articles','ArticleController@generateAdminArticlesList');
+    Route::any('/admin/articles/create','ArticleController@create');
+    Route::any('/admin/articles/update/{id}','ArticleController@update');
+    Route::any('/admin/articles/delete/{id}','ArticleController@delete');
+
+    Route::get('/admin/works','WorksController@generateAdminWorksList');
+    Route::any('/admin/works/create','WorksController@create');
+    Route::any('/admin/works/update/{id}','WorksController@update');
+    Route::any('/admin/works/delete/{id}','WorksController@delete');
+
+});

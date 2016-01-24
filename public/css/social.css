@@ -1,0 +1,112 @@
+@import url(http://fonts.googleapis.com/css?family=Quattrocento+Sans:400,700);
+@import url("http://weloveiconfonts.com/api/?family=entypo");
+:before, :after {
+  content: '';
+  display: block;
+  position: absolute;
+  box-sizing: border-box; }
+
+.inner {
+  width: 780px;
+  margin: 0 auto; }
+
+.inner a {
+  float: left;
+  margin: 45px 25px 0; }
+
+.btn {
+  position: relative;
+  display: block;
+  width: 210px;
+  height: 40px;
+  padding: 0 0 0 55px;
+  font: 700 16px/40px 'Quattrocento Sans', sans-serif;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: #555;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, #fff 0%, #e6e6e6 100%);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  cursor: pointer; }
+
+.btn span {
+  font-size: 14px;
+  text-transform: none;
+  color: #aaa; }
+
+.btn:before {
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  font: 20px/40px entypo;
+  text-align: center;
+  color: #fff;
+  border-radius: 2px 0 0 2px; }
+
+.btn.fb:before {
+  content: '\f30c';
+  background: linear-gradient(to bottom, #47c 0%, #2f5fae 100%); }
+
+.btn.vk:before {
+  content: "\f354";
+  color: #356ac2;
+  background: linear-gradient(to bottom, #47c 0%, #2f5fae 100%); }
+
+.btn.tw:before {
+  content: '\f309';
+  background: linear-gradient(to bottom, #0cf 0%, #00a3cc 100%); }
+
+.btn.gp:before {
+  content: '\f30f';
+  background: linear-gradient(to bottom, #d43 0%, #bd2f20 100%); }
+
+.btn:hover {
+  text-shadow: 0 0 10px #fff; }
+
+/* reverse */
+.btn.reverse {
+  color: #fff; }
+
+.btn.reverse span {
+  color: #eee; }
+
+.btn.fb.reverse {
+  background: linear-gradient(to bottom, #47c 0%, #2f5fae 100%); }
+
+.btn.vk.reverse {
+  background: linear-gradient(to bottom, #47c 0%, #2f5fae 100%); }
+
+.btn.tw.reverse {
+  background: linear-gradient(to bottom, #0cf 0%, #00a3cc 100%); }
+
+.btn.gp.reverse {
+  background: linear-gradient(to bottom, #d43 0%, #bd2f20 100%); }
+
+.btn.reverse:before {
+  color: #555;
+  background: linear-gradient(to bottom, #fff 0%, #e6e6e6 100%); }
+
+/* naked */
+.btn.naked:before {
+  border-right: 1px solid #aaa;
+  background: none; }
+
+.btn.fb.naked:before {
+  color: #356ac2; }
+
+.btn.tw.naked:before {
+  color: #00b8e6; }
+
+.btn.gp.naked:before {
+  color: #d33523; }
+
+.social-block {
+  display: inline-block;
+  float: right; }
+
+.social-block li {
+  display: inline-block;
+  vertical-align: middle; }
+
+/*# sourceMappingURL=social.css.map */

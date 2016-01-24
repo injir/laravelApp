@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Controllers\UserController;
 class Authenticate
 {
     /**
@@ -17,14 +17,21 @@ class Authenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if (Auth::guard($guard)->guest()) {
-            if ($request->ajax()) {
-                return response('Unauthorized.', 401);
-            } else {
-                return redirect()->guest('login');
-            }
+//        if (Auth::guard($guard)->guest()) {
+//            if ($request->ajax()) {
+//                return response('Unauthorized.', 401);
+//            } else {
+//                return redirect()->guest('login');
+//            }
+//        }
+//
+//        return $next($request);
+        if (UserController::getAuthStatus()) {
+            return $next($request);
+        }
+        else{
+            return redirect('/');
         }
 
-        return $next($request);
     }
 }

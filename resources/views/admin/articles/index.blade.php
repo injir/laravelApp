@@ -1,12 +1,15 @@
-@extends('layouts.main')
+@extends('layouts.adminLayout')
 @section('content')
     @parent
+    <h1><a href="/admin/articles/create">Create</a></h1>
     <?php
+
     foreach($articles as $item){
     ?>
 
-    <div class="article-wrapper" id="article-<?php echo $item->id ?>">
-
+    <div class="article-wrapper">
+        <a href = "/admin/articles/update/<?php echo $item->id?>">Update</a>
+        <a href = "/admin/articles/delete/<?php echo $item->id?>">Delete</a>
         <div class="card radius shadowDepth1">
             <div class="card__image border-tlr-radius">
                 <img src="http://lorempixel.com/400/200/sports/" alt="image" class="border-tlr-radius">
@@ -16,8 +19,8 @@
                 <div class="card__share">
                     <div class="card__social">
                         <a class="share-icon facebook" href="#"><span class="fa fa-facebook"></span></a>
-                        <a class="share-icon twitter" href="/repost/articles/<?php echo $item->id ?>"><span class="fa fa-twitter"></span></a>
-                        <a class="share-icon googleplus" onclick="repostVk()" href="#"><span class="fa fa-google-plus"></span></a>
+                        <a class="share-icon twitter" href="#"><span class="fa fa-twitter"></span></a>
+                        <a class="share-icon googleplus" href="#"><span class="fa fa-google-plus"></span></a>
                     </div>
 
                     <a id="share" class="share-toggle share-icon" href="#"></a>

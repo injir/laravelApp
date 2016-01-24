@@ -3,34 +3,132 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Users;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use App\Models;
 class SocialAuthController extends Controller
 {
-    private static $CLIENT_ID = '5237078'; // ID ïðèëîæåíèÿ
-    private static $CLIENT_SECRET = 'F1zLbnzqCAx5zsDgs23I'; // Çàùèù¸ííûé êëþ÷
-    private static $REDIRECT_URI = 'http://ct24188.tmweb.ru/public/vk'; // Àäðåñ ñàéòà
-    private static $VK_AUTHORIZE = 'https://oauth.vk.com/authorize'; // Àâòîðèçàöèÿ
+    private static $CLIENT_ID = '5237078'; // ID Ð¿Ñ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ñ
+    private static $CLIENT_SECRET = 'F1zLbnzqCAx5zsDgs23I'; // Ð—Ð°Ñ‰Ð¸Ñ‰Ñ‘Ð½Ð½Ñ‹Ð¹ ÐºÐ»ÑŽÑ‡
+    private static $REDIRECT_URI = 'http://ct24188.tmweb.ru/public/vk'; // ÐÐ´Ñ€ÐµÑ ÑÐ°Ð¹Ñ‚Ð°
+    private static $VK_AUTHORIZE = 'https://oauth.vk.com/authorize'; // ÐÐ²Ñ‚Ð¾Ñ€Ð¸Ð·Ð°Ñ†Ð¸Ñ
     private static $VK_TOKEN_URL =  'https://oauth.vk.com/access_token';
+    private static $SCOPE = 'wall,offline,photos';
     const VK_DISPLAY_METHOD = 'popup';
-    const VK_FIELDS = 'uid,first_name,last_name,screen_name,sex,bdate,photo_big';
+    const VK_FIELDS = 'uid,first_name,last_name,screen_name,sex,bdate,photo_100';
     public static $USER_INFO = null;
-    //Ìåòîä îñóùåñòâëÿåò ðåäèðåêò íà ñòðàíèöó self::$REDIRECT_URI ñ GET['code'], ïðè óñïåøíîé àâòîðèçàöèè ÷åðåç âêîíòàêòå
+
+
+//--------------------------------------//
+//              PUBLIC API
+//--------------------------------------//
+// ÐœÐµÑ‚Ð¾Ð´ Ð¾ÑÑƒÑ‰ÐµÑÑ‚Ð²Ð»ÑÐµÑ‚ Ð°Ð²Ñ‚Ð¾Ñ€Ð¸Ð·Ð°Ñ†Ð¸ÑŽ Ñ‡ÐµÑ€ÐµÐ· Ð²Ðº
+    public function vkAuth(Request $request){
+        if(!UserController::getAuthStatus()) {
+            if (isset($_GET['code'])) {
+                $token = self::getVkToken($_GET['code']);
+                if (isset($token['access_token'])) {
+                    $userInfo = self::getVkUserInfo($token);
+                    $role = UserController::useridentification(@$request, @$userInfo);
+                    self::createVkSession(@$request, @$userInfo, @$role, $token['access_token']);
+                    //var_dump($userInfo,$token);
+                   return redirect('/');
+                    $params = array(
+
+                        'owner_id' =>   '-60165420',
+                        'message' => "test",
+
+                    );
+                    $a = file_get_contents('https://api.vk.com/method/wall.post' . '?' . urldecode(http_build_query($params)).'&'.'access_token='.Session::get('user.token'));
+                    var_dump($a);
+                }
+
+            } else {
+                $url = self::getVkCode();
+                if ($url) {
+
+                    return redirect($url);
+                } else {
+                    return redirect('/');
+                }
+
+            }
+        }
+        else{
+            return redirect('/');
+        }
+    }
+    public function repost($table,$id){
+        $record = DB::table($table)->where('id',$id)->get();
+        $params = array(
+
+            'owner_id' =>   '-60165420',
+            'message' => "test",
+
+         );
+        $a = file_get_contents('https://api.vk.com/method/wall.post' . '?' . urldecode(http_build_query($params)).'&'.'access_token='.Session::get('user.token'));
+        var_dump($a);
+    }
+
+    public function uploadVk(){
+        if (isset($_POST["url"])) {
+
+            $upload_url = $_POST["url"];
+           $image =  'image/martanto-2.jpg';
+            var_dump($image);
+            $post_params['photo'] ='@'.$image; // kartinka.jpg Ðº Ð¿Ñ€Ð¸Ð¼ÐµÑ€Ñƒ Ð»ÐµÐ¶Ð¸Ñ‚ Ð² Ñ‚Ð¾Ð¹ Ð¶Ðµ Ð¿Ð°Ð¿ÐºÐµ, Ñ‡Ñ‚Ð¾ Ð¸ Ð½Ð°Ñˆ upload.php
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $upload_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_params);
+            $result = curl_exec($ch);
+            curl_close($ch);
+
+            echo $result;
+
+        }
+
+    }
+
+//--------------------------------------//
+//             PROTECTED API
+//--------------------------------------//
+    protected function createVkSession($request,$user,$role,$token){
+        $request->session()->flush();
+        $request->session()->put('user.id', $user['uid']);
+        $request->session()->put('user.name', $user['first_name'].' '.$user['last_name']);
+        $request->session()->put('user.photo', $user['photo_100']);
+        $request->session()->put('user.role', $role);
+        $request->session()->put('user.token', $token);
+
+    }
+
+
+//--------------------------------------//
+//              PRIVAT API
+//--------------------------------------//
+////ÐœÐµÑ‚Ð¾Ð´ Ð¾ÑÑƒÑ‰ÐµÑÑ‚Ð²Ð»ÑÐµÑ‚ Ñ€ÐµÐ´Ð¸Ñ€ÐµÐºÑ‚ Ð½Ð° ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ñƒ self::$REDIRECT_URI Ñ GET['code'], Ð¿Ñ€Ð¸ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾Ð¹ Ð°Ð²Ñ‚Ð¾Ñ€Ð¸Ð·Ð°Ñ†Ð¸Ð¸ Ñ‡ÐµÑ€ÐµÐ· Ð²ÐºÐ¾Ð½Ñ‚Ð°ÐºÑ‚Ðµ
+
     private function getVkCode(){
         $params = array(
             'client_id'     => self::$CLIENT_ID,
-            'display'=> self::VK_DISPLAY_METHOD,
+            'display'       => self::VK_DISPLAY_METHOD,
             'redirect_uri'  => self::$REDIRECT_URI,
-            'response_type' => 'code'
+            'response_type' => 'code',
+            'scope'         => self::$SCOPE,
         );
         $url = self::$VK_AUTHORIZE. '?' . urldecode(http_build_query($params));
         //return redirect(self::$VK_AUTHORIZE. '?' . urldecode(http_build_query($params)));
        // echo "<a href='$url'>vk</a>";
         return $url;
     }
+
+// ÐœÐµÑ‚Ð¾Ð´ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð’Ðš Ñ‚Ð¾ÐºÐµÐ½
     private function getVkToken($code){
         $params = array(
             'client_id'     => self::$CLIENT_ID,
@@ -40,8 +138,9 @@ class SocialAuthController extends Controller
             'code' => $code
         );
         $token = json_decode(file_get_contents(self::$VK_TOKEN_URL. '?' . urldecode(http_build_query($params))), true);
-        return $token; // Ìàññèâ
+        return $token; // ÐœÐ°ÑÑÐ¸Ð²
     }
+// ÐœÐµÑ‚Ð¾Ð´ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸ÑŽ Ð¾Ð± Ð°Ð²Ñ‚Ð¾Ñ€Ð¸Ð·Ð¾Ð²Ð°Ð½Ð½Ð¾Ð¼ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ðµ
     private function getVkUserInfo($token){
         if (isset($token['access_token'])) {
             $params = array(
@@ -57,80 +156,12 @@ class SocialAuthController extends Controller
 
         }
         else{
-            echo "×òî òî ïîøëî íå òàê, ïîïðîáóéòå ïîçæå";
+            echo "Ð§Ñ‚Ð¾ Ñ‚Ð¾ Ð¿Ð¾ÑˆÐ»Ð¾ Ð½Ðµ Ñ‚Ð°Ðº, Ð¿Ð¾Ð¿Ñ€Ð¾Ð±ÑƒÐ¹Ñ‚Ðµ Ð¿Ð¾Ð·Ð¶Ðµ";
         }
     }
 
 
-    public function vkAuth(Request $request){
-        if(isset($_GET['code'])) {
-            $token = self::getVkToken($_GET['code']);
-            if (isset($token['access_token'])) {
-                $userInfo = self::getVkUserInfo($token);
-                $this->userIdentity(@$request,@$userInfo);
-                return redirect('/');
-            }
-
-        }
-        else{
-           $url =  self::getVkCode();
-            if($url){
-
-                return redirect($url);
-            }
-            else{
-                return redirect('/');
-            }
-
-        }
-    }
-    public static function createVkSession($request,$user,$role){
-        $request->session()->flush();
-        $request->session()->put('user.id', $user['uid']);
-        $request->session()->put('user.name', $user['first_name'].' '.$user['last_name']);
-        $request->session()->put('user.photo', $user['photo_big']);
-        $request->session()->put('user.role', $role);
-
-    }
-    protected function userIdentity($request,$user){
-        $checkUser = $this->checkUser(@$user);
-        $role = 0;
-        if($checkUser){
-            $role = $this->checkUserRole(@$checkUser);
-            $this->updateUserInfo(@$checkUser,@$user);
-        }
-        else{
-            $this->saveUserInDB($user);
-        }
-        $this->createVkSession($request,$user,$role);
-
-    }
-
-    protected function checkUser($user){
-        $result = Users::find($user['uid']);
-        if(!$result){
-           return false;
-        }
-        else {
-            return $result;
-         }
-    }
-    protected function checkUserRole($user){
-        return $user->role;
-    }
-    protected function updateUserInfo($oldUser, $newUser){
-        $oldUser->name = $newUser['first_name'].' '.$newUser['last_name'];
-        $oldUser->save();
-    }
 
 
-    protected function saveUserInDB($user){
-        $result = Users::find($user['uid']);
-        if(!$result){
-            $newUser = new Users();
-            $newUser->id = $user['uid'];
-            $newUser->name = $user['first_name'].' '.$user['last_name'];
-            $newUser->save();
-        }
-    }
+
 }

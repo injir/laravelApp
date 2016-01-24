@@ -9,55 +9,51 @@
     <link href="/css/articles.css" rel="stylesheet" type="text/css">
     <link href="/css/codeblock.css" rel="stylesheet" type="text/css">
     <link href="/css/social.css" rel="stylesheet" type="text/css">
+    {{--<link href="/css/editor.css" rel="stylesheet" type="text/css">--}}
+    {{--<link href="/css/form.css" rel="stylesheet" type="text/css">--}}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.6.6/summernote.min.css" rel="stylesheet" type="text/css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.6.6/summernote.min.js"></script>
+    <script src="//cdn.ckeditor.com/4.5.6/full/ckeditor.js"></script>
     <script src="/js/main.js"></script>
     <script src="/js/articles.js"></script>
 
-    <script src="//vk.com/js/api/openapi.js" type="text/javascript"></script>
-    <script src="/js/social.js"></script>
+    {{--<script src="/js/editor.js"></script>--}}
 </head>
 <body>
-<script src="/js/facebook.js"></script>
 
-
-<div
-        class="fb-like"
-        data-share="true"
-        data-width="450"
-        data-show-faces="true">
-</div>
+{{--LEFT MENU BLOCK OPEN--}}
 <?php
-  use App\Http\Controllers\MenuController;
-  use App\Http\Controllers\UserController;
-  $menu = MenuController::generateMenuItems();
+use App\Http\Controllers\MenuController;
+use App\Http\Controllers\UserController;
+$menu = MenuController::generateMenuItems();
 
 ?>
 <nav id="nav" class="nav">
-{{--USER BLOCK OPEN--}}
-<?php
-$user = UserController::getUserFromSession();
-if($user){?>
+    {{--USER BLOCK OPEN--}}
+    <?php
+    $user = UserController::getUserFromSession();
+    if($user){?>
     <img src="<?php echo $user['photo']?>" class="profile-img">
     <div class="profile-text">
         <h1 class="profile-name"><?php echo $user['name']?></h1>
         <span class="profile-title"><?php echo UserController::getUserStatusTitle()?></span>
     </div>
 
-<?php
-}
-?>
-{{--USER BLOCK CLOSE--}}
+    <?php
+    }
+    ?>
+    {{--USER BLOCK CLOSE--}}
 
 
     {{--LEFT MENU ITEMS OPEN--}}
     <ul class="offcanvas__nav--list">
         <?php foreach($menu as $item){?>
-        <li class="offcanvas__nav--item"><a href="<?php echo '/'.$item->alias ?>"><?php echo $item->title ?></a></li>
-       <?php }?>
+        <li class="offcanvas__nav--item"><a href="<?php echo '/admin/'.$item->alias ?>"><?php echo $item->title ?></a></li>
+        <?php }?>
     </ul>
     {{--LEFT MENU ITEMS CLOSE--}}
 </nav>
@@ -82,5 +78,7 @@ if($user){?>
     </header>
     @yield('content')
 </section>
+
+
 </body>
 </html>
