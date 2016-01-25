@@ -35,8 +35,8 @@ Route::post('uploadvk','SocialAuthController@uploadVk');
             // \Illuminate\Support\Facades\Session::push('key','213123');
             return view('welcome');
         });
-        Route::get('works','WorksController@generateWorksList');
-        Route::get('articles','ArticleController@generateArticlesList');
+        Route::get('works','WorksController@generateModelList');
+        Route::get('articles','ArticleController@generateModelList');
         Route::get('articles/{id}','ArticleController@viewArticle');
         Route::get('vk', 'SocialAuthController@vkAuth');
 
@@ -49,12 +49,12 @@ Route::post('uploadvk','SocialAuthController@uploadVk');
 
 Route::group(['middleware' => ['web','customAuth']], function () {
     Route::get('/admin','AdminController@index');
-    Route::get('/admin/articles','ArticleController@generateAdminArticlesList');
+    Route::get('/admin/articles','ArticleController@generateAdminModelList');
     Route::any('/admin/articles/create','ArticleController@create');
     Route::any('/admin/articles/update/{id}','ArticleController@update');
     Route::any('/admin/articles/delete/{id}','ArticleController@delete');
 
-    Route::get('/admin/works','WorksController@generateAdminWorksList');
+    Route::get('/admin/works','WorksController@generateAdminModelList');
     Route::any('/admin/works/create','WorksController@create');
     Route::any('/admin/works/update/{id}','WorksController@update');
     Route::any('/admin/works/delete/{id}','WorksController@delete');

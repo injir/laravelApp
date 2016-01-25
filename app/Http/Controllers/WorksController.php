@@ -14,17 +14,20 @@ class WorksController extends Controller
     /**
      *
      */
-    const BASIC_ROUTE = 'admin/works/';
-    public function generateWorksList(){
-        @$works = Works::all();
+    const BASIC_ROUTE = '/works';
+    const BASIC_VIEW = 'works/';
+    const BASIC_ADMIN_VIEW = 'admin/works/';
+    const BASIC_ADMIN_ROUTE = 'admin/works/';
+    public function generateModelList(){
+        @$model = Schema::all();
 
-        return view('works/index',['works'=>@$works]);
+        return view(self::BASIC_VIEW.'index',['model'=>@$model]);
     }
 
-    public function generateAdminWorksList(){
+    public function generateAdminModelList(){
 
         @$model = Schema::all();
-        return view('admin/works/index',['model'=>@$model]);
+        return view(self::BASIC_ADMIN_VIEW.'index',['model'=>@$model]);
 
     }
     public function create(){
@@ -35,10 +38,10 @@ class WorksController extends Controller
             $model->text = $_POST['text'];
             $model->author = Session::get('user.name');
             $model->save();
-            return redirect(self::BASIC_ROUTE);
+            return redirect(self::BASIC_ADMIN_ROUTE);
         }
         else {
-            return view(self::BASIC_ROUTE.'form',['model'=>false]);
+            return view(self::BASIC_ADMIN_VIEW.'form',['model'=>false]);
         }
     }
     public function update($id){
@@ -50,10 +53,10 @@ class WorksController extends Controller
             $model->text = $_POST['text'];
             $model->author = Session::get('user.name');
             $model->save();
-            return redirect(self::BASIC_ROUTE);
+            return redirect(self::BASIC_ADMIN_ROUTE);
         }
 
-        return view(self::BASIC_ROUTE.'form',['model'=>$model]);
+        return view(self::BASIC_ADMIN_VIEW.'form',['model'=>$model]);
     }
 
 
@@ -61,6 +64,6 @@ class WorksController extends Controller
         $article = Schema::find(@$id);
         $article->delete();
 
-        return redirect(self::BASIC_ROUTE);
+        return redirect(self::BASIC_ADMIN_ROUTE);
     }
 }

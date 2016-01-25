@@ -11,6 +11,16 @@ use Illuminate\Support\Facades\Auth;
 use App\Models;
 class SocialAuthController extends Controller
 {
+    private static $VK = array(
+        'client_id' => '5237078',
+        'client_secret' => 'F1zLbnzqCAx5zsDgs23I',
+        'redirect_url'=>'http://ct24188.tmweb.ru/vk',
+        'authorize_url'=> 'https://oauth.vk.com/authorize',
+        'token_url'=>'https://oauth.vk.com/access_token',
+        'scope' => 'wall,offline,photos',
+        'display_method' => 'popup',
+        'fields' => 'uid,first_name,last_name,screen_name,sex,bdate,photo_100',
+    );
     private static $CLIENT_ID = '5237078'; // ID приложения
     private static $CLIENT_SECRET = 'F1zLbnzqCAx5zsDgs23I'; // Защищённый ключ
     private static $REDIRECT_URI = 'http://ct24188.tmweb.ru/public/vk'; // Адрес сайта
@@ -36,20 +46,11 @@ class SocialAuthController extends Controller
                     self::createVkSession(@$request, @$userInfo, @$role, $token['access_token']);
                     //var_dump($userInfo,$token);
                    return redirect('/');
-                    $params = array(
-
-                        'owner_id' =>   '-60165420',
-                        'message' => "test",
-
-                    );
-                    $a = file_get_contents('https://api.vk.com/method/wall.post' . '?' . urldecode(http_build_query($params)).'&'.'access_token='.Session::get('user.token'));
-                    var_dump($a);
                 }
 
             } else {
                 $url = self::getVkCode();
                 if ($url) {
-
                     return redirect($url);
                 } else {
                     return redirect('/');
@@ -61,39 +62,41 @@ class SocialAuthController extends Controller
             return redirect('/');
         }
     }
-    public function repost($table,$id){
-        $record = DB::table($table)->where('id',$id)->get();
-        $params = array(
 
-            'owner_id' =>   '-60165420',
-            'message' => "test",
-
-         );
-        $a = file_get_contents('https://api.vk.com/method/wall.post' . '?' . urldecode(http_build_query($params)).'&'.'access_token='.Session::get('user.token'));
-        var_dump($a);
-    }
-
-    public function uploadVk(){
-        if (isset($_POST["url"])) {
-
-            $upload_url = $_POST["url"];
-           $image =  'image/martanto-2.jpg';
-            var_dump($image);
-            $post_params['photo'] ='@'.$image; // kartinka.jpg к примеру лежит в той же папке, что и наш upload.php
-
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $upload_url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_params);
-            $result = curl_exec($ch);
-            curl_close($ch);
-
-            echo $result;
-
-        }
-
-    }
+    //-------------------------------------------------------------------------
+//    public function repost($table,$id){
+//        $record = DB::table($table)->where('id',$id)->get();
+//        $params = array(
+//
+//            'owner_id' =>   '-60165420',
+//            'message' => "test",
+//
+//         );
+//        $a = file_get_contents('https://api.vk.com/method/wall.post' . '?' . urldecode(http_build_query($params)).'&'.'access_token='.Session::get('user.token'));
+//        var_dump($a);
+//    }
+//-----------------------------------------------------------------------
+//    public function uploadVk(){
+//        if (isset($_POST["url"])) {
+//
+//            $upload_url = $_POST["url"];
+//           $image =  'image/martanto-2.jpg';
+//            var_dump($image);
+//            $post_params['photo'] ='@'.$image; // kartinka.jpg к примеру лежит в той же папке, что и наш upload.php
+//
+//            $ch = curl_init();
+//            curl_setopt($ch, CURLOPT_URL, $upload_url);
+//            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//            curl_setopt($ch, CURLOPT_POST, true);
+//            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_params);
+//            $result = curl_exec($ch);
+//            curl_close($ch);
+//
+//            echo $result;
+//
+//        }
+//
+//    }
 
 //--------------------------------------//
 //             PROTECTED API
@@ -116,13 +119,13 @@ class SocialAuthController extends Controller
 
     private function getVkCode(){
         $params = array(
-            'client_id'     => self::$CLIENT_ID,
-            'display'       => self::VK_DISPLAY_METHOD,
-            'redirect_uri'  => self::$REDIRECT_URI,
+            'client_id'     => self::$VK['client_id'],
+            'display'       => self::$VK['display_method'],
+            'redirect_uri'  => self::$VK['redirect_url'],
             'response_type' => 'code',
-            'scope'         => self::$SCOPE,
+            'scope'         => self::$VK['scope'],
         );
-        $url = self::$VK_AUTHORIZE. '?' . urldecode(http_build_query($params));
+        $url = self::$VK['authorize_url']. '?' . urldecode(http_build_query($params));
         //return redirect(self::$VK_AUTHORIZE. '?' . urldecode(http_build_query($params)));
        // echo "<a href='$url'>vk</a>";
         return $url;
@@ -131,13 +134,13 @@ class SocialAuthController extends Controller
 // Метод возвращает ВК токен
     private function getVkToken($code){
         $params = array(
-            'client_id'     => self::$CLIENT_ID,
-            'client_secret' => self::$CLIENT_SECRET,
-            'display'       => self::VK_DISPLAY_METHOD,
-            'redirect_uri'  => self::$REDIRECT_URI,
+            'client_id'     => self::$VK['client_id'],
+            'client_secret' => self::$VK['client_secret'],
+            'display'       => self::$VK['display_method'],
+            'redirect_uri'  => self::$VK['redirect_url'],
             'code' => $code
         );
-        $token = json_decode(file_get_contents(self::$VK_TOKEN_URL. '?' . urldecode(http_build_query($params))), true);
+        $token = json_decode(file_get_contents(self::$VK['token_url']. '?' . urldecode(http_build_query($params))), true);
         return $token; // Массив
     }
 // Метод возвращает информацию об авторизованном пользователе
@@ -145,7 +148,7 @@ class SocialAuthController extends Controller
         if (isset($token['access_token'])) {
             $params = array(
                 'uids' => $token['user_id'],
-                'fields' => self::VK_FIELDS,
+                'fields' => self::$VK['fields'],
                 'access_token' => $token['access_token']
             );
             $userInfo = json_decode(file_get_contents('https://api.vk.com/method/users.get' . '?' . urldecode(http_build_query($params))), true);
@@ -161,7 +164,13 @@ class SocialAuthController extends Controller
     }
 
 
+//----------------------------FACEBOOK API------------//
 
+private static $FACEBOOK=array(
+    'id' => '964001690382555',
+    'version' => 'v2.5',
+    'app_secret' =>'6af91ab43590847f28c21ef4e3a974c0',
 
+);
 
 }

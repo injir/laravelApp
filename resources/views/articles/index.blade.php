@@ -2,7 +2,7 @@
 @section('content')
     @parent
     <?php
-    foreach($articles as $item){
+    foreach($model as $item){
     ?>
 
     <div class="article-wrapper" id="article-<?php echo $item->id ?>">

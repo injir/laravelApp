@@ -2,7 +2,7 @@
 @section('content')
     @parent
     <?php
-    foreach($works as $item){
+    foreach($model as $item){
         ?>
         <article class="work">
             <header class="work-header">

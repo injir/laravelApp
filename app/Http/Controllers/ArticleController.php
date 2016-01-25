@@ -6,64 +6,63 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Models\Article;
+
 Use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
+use App\Models\Article as Schema;
 
 class ArticleController extends Controller
 {
-    public function generateArticlesList(){
+    const BASIC_ROUTE = '/articles';
+    const BASIC_VIEW = 'articles/';
+    const BASIC_ADMIN_VIEW = 'admin/articles/';
+    const BASIC_ADMIN_ROUTE = 'admin/articles/';
+    public function generateModelList(){
+        @$model = Schema::all();
 
-         @$articles = Article::all();
-        return view('articles/index',['articles'=>@$articles]);
-
-    }
-    public function viewArticle($id){
-        @$article = Article::find($id);
-        return view('articles/article',['article'=>@$article]);
-        //var_dump($article);
-    }
-    public function generateAdminArticlesList(){
-
-        @$articles = Article::all();
-        return view('admin/articles/index',['articles'=>@$articles]);
-
+        return view(self::BASIC_VIEW.'index',['model'=>@$model]);
     }
 
+    public function generateAdminModelList(){
+
+        @$model = Schema::all();
+        return view(self::BASIC_ADMIN_VIEW.'index',['model'=>@$model]);
+
+    }
     public function create(){
 
         if($_POST){
-          $article = new Article();
-          $article->title = $_POST['title'];
-          $article->text = $_POST['text'];
-          $article->author = Session::get('user.name');
-            $article->save();
-            return redirect('/admin/articles');
+            $model = new Schema();
+            $model->title = $_POST['title'];
+            $model->text = $_POST['text'];
+            $model->author = Session::get('user.name');
+            $model->save();
+            return redirect(self::BASIC_ADMIN_ROUTE);
         }
         else {
-            return view('admin/articles/create');
+            return view(self::BASIC_ADMIN_VIEW.'form',['model'=>false]);
         }
     }
     public function update($id){
-        $article = Article::find(@$id);
+        $model = Schema::find(@$id);
 
         if($_POST){
 
-            $article->title = $_POST['title'];
-            $article->text = $_POST['text'];
-            $article->author = Session::get('user.name');
-            $article->save();
-            return redirect('/admin/articles');
+            $model->title = $_POST['title'];
+            $model->text = $_POST['text'];
+            $model->author = Session::get('user.name');
+            $model->save();
+            return redirect(self::BASIC_ADMIN_ROUTE);
         }
 
-            return view('admin/articles/create',['article'=>$article]);
+        return view(self::BASIC_ADMIN_VIEW.'form',['model'=>$model]);
     }
 
 
     public function delete($id){
-        $article = Article::find(@$id);
+        $article = Schema::find(@$id);
         $article->delete();
 
-        return redirect('admin/articles');
+        return redirect(self::BASIC_ADMIN_ROUTE);
     }
 }

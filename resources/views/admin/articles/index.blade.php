@@ -4,7 +4,7 @@
     <h1><a href="/admin/articles/create">Create</a></h1>
     <?php
 
-    foreach($articles as $item){
+    foreach($model as $item){
     ?>
 
     <div class="article-wrapper">

@@ -5,6 +5,22 @@ window.fbAsyncInit = function() {
         xfbml      : true,
         version    : 'v2.5'
     });
+    //FB.ui({
+    //    method: 'feed',
+    //    link: 'https://developers.facebook.com/docs/',
+    //    caption: 'An example caption',
+    //}, function(response){});
+
+    FB.login(function(response){
+        FB.api('/me', function(response) {
+            console.log(JSON.stringify(response));
+        });
+    })
+    FB.getLoginStatus(function(response) {
+
+        console.log(response);
+        //statusChangeCallback(response);
+    });
 };
 
 (function(d, s, id){
@@ -14,8 +30,9 @@ window.fbAsyncInit = function() {
     js.src = "//connect.facebook.net/en_US/sdk.js";
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
-FB.ui({
-    method: 'feed',
-    link: 'https://developers.facebook.com/docs/',
-    caption: 'An example caption',
-}, function(response){});
+
+
+//window.onload = function(){
+//
+//
+//};
